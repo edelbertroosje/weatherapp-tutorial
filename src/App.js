@@ -1,10 +1,28 @@
-import React from 'react';
+import React, {useState} from 'react';
+import axios from 'axios';
 import SearchBar from './components/searchBar/SearchBar';
 import TabBarMenu from './components/tabBarMenu/TabBarMenu';
 import MetricSlider from './components/metricSlider/MetricSlider';
 import './App.css';
 
+const apiKey = '4b5583b5d81e7f9aabdbbd73473546f1';
+
+
+
 function App() {
+  const [weatherData, setWeatherData] = useState()
+
+
+  async function fetchData() {
+    try{
+      const result = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=utrecht,nl&appid=${apiKey}&lang=nl`)
+      console.log(result.data);
+      setWeatherData(result.data);
+    }catch(e){
+      console.error(e);
+    }
+  }
+
   return (
     <>
       <div className="weather-container">
@@ -14,11 +32,14 @@ function App() {
           <SearchBar/>
 
           <span className="location-details">
-            <h2>Bewolkt</h2>
-            <h3> </h3>
-            <h1>14 &deg;</h1>
-
-            <button type="button">
+              {Object.keys(weatherData).length > 0 &&
+                  <>
+                      <h2>{weatherData.weather[0].description}</h2>
+                      <h3>{weatherData.name}</h3>
+                      <h1>{weatherData.main.temp}</h1>
+                  </>
+              }
+            <button type="button" onClick={fetchData}>
               Haal data op!
             </button>
           </span>
